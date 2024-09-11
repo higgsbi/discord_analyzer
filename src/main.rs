@@ -63,8 +63,10 @@ fn get_message_history(root_path: &str, channel_id: &str, channel_name: &str) ->
         &channel_id.replace("\"", ""));
     
     let messages_path = format!("{}/messages/c{}/messages.json", root_path, channel_id);
-    let messages_string = fs::read_to_string(&messages_path).expect(&format!("Could not read messages for folder {}", &messages_path)); 
-    let messages_json: Value = serde_json::from_str(&messages_string).expect(&format!("Could not read json for channel c{}", &channel_id));
+    let messages_string = fs::read_to_string(&messages_path)
+        .expect(&format!("Could not read messages for folder {}", &messages_path)); 
+    let messages_json: Value = serde_json::from_str(&messages_string)
+        .expect(&format!("Could not read json for channel c{}", &channel_id));
 
     prefix + &messages_json.as_array().iter().map(|chain| -> String {
         chain.iter()
