@@ -1,4 +1,4 @@
-use std::{fmt::format, fs};
+use std::fs;
 use clap::Parser;
 use serde_json::Value;
 
@@ -30,12 +30,9 @@ fn main() {
         .iter()
         .map(|(id, channel)| -> (String, String) {
             let channel_name: String = if channel.to_string().contains("Unknown") {
-                serde_json::to_string_pretty(&channel)
-                    .expect("Could not format message string")
-                    .replace("Unknown", "Inaccessible")
+                channel.to_string().replace("Unknown", "Inaccessible")
             } else {
-                serde_json::to_string_pretty(&channel)
-                    .expect("Could not format message string")
+                channel.to_string()
             };
             (id.to_owned(), channel_name)
         }).collect();
@@ -50,8 +47,7 @@ fn main() {
             if name.contains("Direct") {
                 let url = format!("https://discord.com/channels/@me/{}", id.replace("\"", ""));
                 println!("{} ({})", name.replace("\"", ""), url);
-            } else {
-        
+            } else {        
                 println!("{} ({})", name.replace("\"", ""), id.replace("\"", ""));
             }
             
@@ -60,12 +56,11 @@ fn main() {
 
     fs::write(output_path, message_history).expect("Unable to write message_history");
     println!("\nFinished discord message analysis");
-    
 }
 
 // creates a formatted string representation of the user's entire message history
 fn get_message_history(root_path: &str, channel_id: &str, channel_name: &str) -> String {
-    let prefix = format!("-----------{} ({})-----------\n\n", 
+    let prefix = format!("\n-----------{} ({})-----------\n\n", 
         &channel_name.replace("\"", ""), 
         &channel_id.replace("\"", ""));
     
@@ -75,7 +70,7 @@ fn get_message_history(root_path: &str, channel_id: &str, channel_name: &str) ->
     let messages_json: Value = serde_json::from_str(&messages_string)
         .expect(&format!("Could not read json for channel c{}", &channel_id));
 
-    prefix + &messages_json.as_array().iter().map(|chain| -> String {
+    prefix + &messages_json.as_array().iter().flat_map(|chain| {
         chain.iter()
             .filter_map(|object| object.as_object())
             .filter_map(|map| map.get("Contents"))
@@ -86,6 +81,6 @@ fn get_message_history(root_path: &str, channel_id: &str, channel_name: &str) ->
                 } else {
                     Some(contents_string.replace("\\n", "\n") + "\n")
                 }
-            }).collect()
+            })
     }).collect::<String>()
 }
