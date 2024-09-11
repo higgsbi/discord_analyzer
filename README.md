@@ -8,11 +8,11 @@ into a markdown file for ease of viewing, while also giving an option
 to show a simple list of channels with active conversations.
 
 ## Usage
-To generate message history: `cargo run`
-For additional options: `cargo run -- --help`
+To generate message history: `cargo run`  
+For additional options: `cargo run -- --help`  
 
-Options:
-  -p, --path \<PATH\>      
+Options:  
+  -p, --path \<PATH\>   
   -o, --output \<OUTPUT\>  
   -c, --channels         
   -h, --help             Print help
