@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fmt::format, fs};
 use clap::Parser;
 use serde_json::Value;
 
@@ -47,7 +47,14 @@ fn main() {
     if args.channels {
         channels.sort_by(|a, b| a.1.cmp(&b.1));
         channels.iter().for_each(|(id, name)| {
-            println!("{} ({})", name.replace("\"", ""), id.replace("\"", ""));
+            if name.contains("Direct") {
+                let url = format!("https://discord.com/channels/@me/{}", id.replace("\"", ""));
+                println!("{} ({})", name.replace("\"", ""), url);
+            } else {
+        
+                println!("{} ({})", name.replace("\"", ""), id.replace("\"", ""));
+            }
+            
         });
     }
 
